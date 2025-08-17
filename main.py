@@ -7,6 +7,7 @@ import math
 import random
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List
+import os
 
 from fastapi import (
     FastAPI, Depends, HTTPException, status, Request, Form, Cookie, Query, Response
@@ -123,6 +124,19 @@ def create_access_token(data: dict):
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+
+
+@app.get("/init-database")
+async def initialize_database():
+    # Só permite executar uma vez ou em desenvolvimento
+    if os.environ.get("ALLOW_DB_INIT") == "true":
+        exec(open('init_db.py').read())
+        return {"message": "Database initialized successfully"}
+    return {"message": "Database initialization not allowed"}
+
+
 
 def get_current_user(access_token: Optional[str] = Cookie(None), db: Session = Depends(get_db)):
     if access_token is None: return None
