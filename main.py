@@ -26,11 +26,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 480
 PAGE_SIZE = 20
 
 # --- Configuração do Banco de Dados ---
-SQLALCHEMY_DATABASE_URL = "sqlite:////var/data/saeb.db"
+if os.environ.get("RENDER"):
+    SQLALCHEMY_DATABASE_URL = "sqlite:///tmp/saeb.db"  # Para Render
+else:
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./saeb.db"   # Para desenvolvimento local
+
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
 
 # --- Modelos do Banco de Dados (SQLAlchemy) ---
 class Superuser(Base):
