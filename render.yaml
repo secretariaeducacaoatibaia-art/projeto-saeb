@@ -1,15 +1,13 @@
-# Versão FINAL e CORRETA baseada na especificação oficial do Render Blueprint
+# Versão final com a indentação corrigida.
 
 services:
-  # Define o nosso serviço web
   - type: web
     name: saeb
     runtime: python
     plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app"
-    # Anexa um disco diretamente a este serviço
     disks:
-      - name: saeb-database # Nome do disco
+      - name: saeb-data
         mountPath: /var/data
         sizeGB: 1
