@@ -130,11 +130,8 @@ def create_access_token(data: dict):
 
 @app.get("/init-database")
 async def initialize_database():
-    # Só permite executar uma vez ou em desenvolvimento
-    if os.environ.get("ALLOW_DB_INIT") == "true":
-        exec(open('init_db.py').read())
-        return {"message": "Database initialized successfully"}
-    return {"message": "Database initialization not allowed"}
+    exec(open('init_db.py').read())
+    return {"message": "Database initialized successfully"}
 
 
 
