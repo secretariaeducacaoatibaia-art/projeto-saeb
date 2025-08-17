@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Sistema SAEB</title>
+    <link rel="icon" href="{{ url_for('static', path='/images/ico.ico') }}" type="image/x-icon">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Variáveis de Cores - Paleta mais equilibrada */
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --light-accent: #c3cffe;
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-light: rgba(45, 55, 72, 0.8);
+        }
+
+        /* Layout Básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--light-accent) 0%, #ffecd2 35%, #fcb69f 100%);
+            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            color: var(--text-primary);
+        }
+
+        /* Overlay sutil para dar profundidade */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                rgba(102, 126, 234, 0.05) 0%, 
+                rgba(240, 147, 251, 0.05) 50%, 
+                rgba(195, 207, 254, 0.05) 100%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Efeitos de Glassmorphism aprimorados */
+        .glass-effect {
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            box-shadow: 
+                0 8px 32px rgba(102, 126, 234, 0.15),
+                0 4px 16px rgba(240, 147, 251, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        /* Navbar aprimorada */
+        .navbar {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .navbar-brand span {
+            color: var(--text-primary);
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            transform: translateX(-50%);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover::before {
+            width: 80%;
+        }
+
+        /* Card de conteúdo melhorado */
+        .content-card {
+            padding: 3rem;
+            border-radius: 24px;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .content-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 25px 50px rgba(102, 126, 234, 0.2),
+                0 12px 24px rgba(240, 147, 251, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.8s;
+        }
+        
+        .content-card:hover::before {
+            left: 100%;
+        }
+
+        /* Tipografia melhorada */
+        .main-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle-text {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            font-weight: 400;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .description-text {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        /* Imagem SAEB aprimorada */
+        .saeb-image-container {
+            text-align: center;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .saeb-image {
+            max-width: 420px;
+            border-radius: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 
+                0 20px 40px rgba(102, 126, 234, 0.15),
+                0 8px 16px rgba(240, 147, 251, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            width: 100%;
+        }
+        
+        .saeb-image:hover {
+            transform: scale(1.08) rotate(1deg);
+            box-shadow: 
+                0 35px 70px rgba(102, 126, 234, 0.25),
+                0 15px 30px rgba(240, 147, 251, 0.2);
+        }
+
+        /* Elementos flutuantes melhorados */
+        .floating-element {
+            position: absolute;
+            opacity: 0.08;
+            pointer-events: none;
+            animation: floatElement 8s ease-in-out infinite;
+            color: var(--primary-color);
+        }
+
+        @keyframes floatElement {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.08; }
+            50% { transform: translateY(-30px) rotate(180deg); opacity: 0.15; }
+        }
+
+        .floating-element.element-1 { 
+            top: 15%; 
+            left: 8%; 
+            animation-delay: -2s; 
+            font-size: 2.5rem;
+        }
+        .floating-element.element-2 { 
+            top: 25%; 
+            right: 12%; 
+            animation-delay: -4s; 
+            font-size: 2rem;
+        }
+        .floating-element.element-3 { 
+            bottom: 25%; 
+            left: 15%; 
+            animation-delay: -1s; 
+            font-size: 1.8rem;
+        }
+        .floating-element.element-4 { 
+            bottom: 20%; 
+            right: 8%; 
+            animation-delay: -3s; 
+            font-size: 2.2rem;
+        }
+
+        /* Animações suaves */
+        .fade-in {
+            animation: fadeIn 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(40px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        /* Padrão de fundo sutil */
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(102, 126, 234, 0.05) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(240, 147, 251, 0.05) 1px, transparent 1px);
+            background-size: 120px 120px, 80px 80px;
+            animation: patternMove 25s linear infinite;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        @keyframes patternMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+
+        /* Responsividade aprimorada */
+        @media (max-width: 768px) {
+            .content-card { 
+                padding: 2rem 1.5rem; 
+                margin: 1rem 0.5rem; 
+                border-radius: 20px;
+            }
+            .saeb-image { max-width: 320px; }
+            .main-title { font-size: 2.2rem; }
+            .subtitle-text { font-size: 1.1rem; }
+            .description-text { font-size: 1rem; }
+            .navbar-brand span { font-size: 1.2rem; }
+            
+            .floating-element {
+                display: none; /* Oculta elementos flutuantes em mobile */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content-card { padding: 1.5rem 1rem; }
+            .main-title { font-size: 1.9rem; }
+            .saeb-image { max-width: 280px; }
+        }
+
+        /* Estados de foco para acessibilidade */
+        .nav-link:focus,
+        .content-card:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Melhora na legibilidade */
+        ::selection {
+            background: var(--accent-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <i class="fas fa-graduation-cap floating-element element-1"></i>
+    <i class="fas fa-chart-line floating-element element-2"></i>
+    <i class="fas fa-book floating-element element-3"></i>
+    <i class="fas fa-star floating-element element-4"></i>
+
+    <nav class="navbar navbar-expand-lg sticky-top glass-effect">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="{{ url_for('static', path='/images/logo.png') }}" alt="Logo SAEB" height="50" class="d-inline-block align-middle me-2">
+                <span class="fs-4 align-middle">Sistema SAEB</span>
+            </a>
+            <div class="navbar-nav ms-auto">
+                {% if request.state.user %}
+                    <a class="nav-link" href="/logout">
+                        <i class="fas fa-sign-out-alt me-1"></i>Sair
+                    </a>
+                {% else %}
+                    <a class="nav-link" href="/login">
+                        <i class="fas fa-user-shield me-1"></i>Acesso Restrito
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="py-4 fade-in">
+        <div class="container">
+            {% block content %}
+                <div class="content-card glass-effect">
+                    <div class="text-center">
+                        <h1 class="main-title">Sistema de Avaliação da Educação Básica</h1>
+                        <p class="subtitle-text">
+                            Plataforma moderna para gerenciamento e análise de dados educacionais
+                        </p>
+                    </div>
+                    
+                    <div class="saeb-image-container">
+                        <img src="{{ url_for('static', path='/images/saeb.jpg') }}" alt="Logo SAEB" class="saeb-image">
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <p class="description-text">
+                            Acesse o sistema para visualizar relatórios, análises e dados educacionais com interface intuitiva e moderna
+                        </p>
+                    </div>
+                </div>
+            {% endblock %}
+        </div>
+    </main>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Adiciona a classe de animação quando o documento é totalmente carregado
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animação escalonada dos elementos
+            const elements = document.querySelectorAll('.content-card');
+            elements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.classList.add('fade-in');
+                }, index * 200);
+            });
+            
+            // Efeito de paralaxe sutil nos elementos flutuantes
+            let ticking = false;
+            
+            function updateParallax() {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.floating-element');
+                
+                parallaxElements.forEach((element, index) => {
+                    const speed = 0.5 + (index * 0.1);
+                    const yPos = -(scrolled * speed);
+                    element.style.transform = `translateY(${yPos}px) rotate(${scrolled * 0.1}deg)`;
+                });
+                
+                ticking = false;
+            }
+            
+            function requestTick() {
+                if (!ticking) {
+                    requestAnimationFrame(updateParallax);
+                    ticking = true;
+                }
+            }
+            
+            window.addEventListener('scroll', requestTick);
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

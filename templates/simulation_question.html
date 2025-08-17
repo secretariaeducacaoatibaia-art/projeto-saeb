@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Timer Fixo no Topo-->
+<div id="timer-container" class="timer-container glass-effect">
+    <div class="d-flex flex-column">
+        <div class="mb-1">
+            <i class="fas fa-clock me-2"></i>Tempo Geral: <span id="general-timer">--:--</span>
+        </div>
+    </div>
+</div>
+
+<!-- Botão Encerrar Simulado Fixo -->
+<button class="btn btn-danger glass-effect" id="end-simulation-btn" data-bs-toggle="modal" data-bs-target="#confirmEndModal">
+    <i class="fas fa-times-circle me-1"></i>Encerrar Simulado
+</button>
+
+<style>
+    /* ESTILO DO TIMER - MODIFICADO PARA ATENDER AO PEDIDO */
+    .timer-container { 
+        position: fixed; 
+        top: 80px; 
+        right: 20px; 
+        
+        /* COR INICIAL: Fundo azul com fonte verde */
+        background: #001f3f; /* Um tom de azul escuro */
+        color: #2ECC40; /* Um tom de verde-limão */
+        
+        border: 1px solid var(--glass-border); 
+        backdrop-filter: blur(10px); 
+        -webkit-backdrop-filter: blur(10px); 
+        padding: 15px 20px; 
+        border-radius: 24px; 
+        z-index: 1000; 
+        font-size: 1rem; 
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15); 
+        min-width: 200px;
+        transition: background-color 0.5s ease, color 0.5s ease; /* Transição suave */
+    }
+
+    #general-timer {
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+    
+    /* ESTILO DO BOTÃO DE ENCERRAR */
+    #end-simulation-btn { 
+        position: fixed; 
+        bottom: 20px;
+        left: 20px;
+        z-index: 1000; 
+        border-radius: 12px; 
+        transition: all 0.3s ease;
+        background-color: rgba(220, 53, 69, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+    #end-simulation-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        background-color: rgba(220, 53, 69, 1);
+    }
+
+    /* Estilos Gerais (mantidos do seu código original) */
+    .question-nav-buttons { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-top: 2rem; 
+    }
+    .content-wrapper { 
+        padding: 0 !important; 
+    }
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    .form-check-label:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .modal-content {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+    }
+    .modal-header, .modal-footer {
+        border-color: var(--glass-border);
+    }
+</style>
+
+<div class="container my-4">
+    <div class="content-card glass-effect content-wrapper">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center p-3">
+            <div>
+                <h5 class="main-title mb-0">Questão {{ current_q_idx }} de {{ total_q }}</h5>
+                <small class="subtitle-text">{{ subject.capitalize() }}</small>
+            </div>
+            <div class="description-text fw-bold fs-5"><i class="fas fa-user me-2"></i>{{ student_name }}</div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <div class="mb-4 description-text" style="font-size: 1.2rem; line-height: 1.6;">{{ question.question_text|replace('\n', '<br>')|safe }}</div>
+            <hr>
+            <form action="/simulado/{{ link_id }}/navigate" method="post" id="questionForm">
+                <input type="hidden" name="q_idx" value="{{ current_q_idx }}">
+                <input type="hidden" name="question_id" value="{{ question.id }}">
+
+                <div class="d-grid gap-3">
+                    {% for key, text in options %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="answer" id="option{{ key }}" value="{{ key }}" {% if sim_data.answers.get(question.id|string) == key %}checked{% endif %}>
+                        <label class="form-check-label w-100" for="option{{ key }}">
+                            <div class="border p-3 rounded glass-effect">
+                                <strong>{{ key }})</strong> {{ text }}
+                            </div>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Botões de Navegação -->
+                <div class="question-nav-buttons">
+                    {% if current_q_idx > 1 %}
+                        <button type="submit" name="action" value="previous" class="btn btn-secondary btn-lg"><i class="fas fa-arrow-left me-2"></i>Voltar</button>
+                    {% else %}<span></span>{% endif %}
+
+                    {% if current_q_idx < total_q %}
+                        <button type="submit" name="action" value="next" class="btn btn-primary btn-lg">Avançar<i class="fas fa-arrow-right ms-2"></i></button>
+                    {% else %}
+                        <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#confirmFinishModal"><i class="fas fa-check-circle me-2"></i>Finalizar Simulado</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar FINALIZAR -->
+<div class="modal fade" id="confirmFinishModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content glass-effect">
+            <div class="modal-header">
+                <h5 class="main-title">Finalizar Simulado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="description-text">Tem certeza que deseja finalizar e enviar suas respostas?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="/simulado/{{ link_id }}/navigate" method="post" style="display: inline;">
+                    <input type="hidden" name="q_idx" value="{{ current_q_idx }}">
+                    <input type="hidden" name="question_id" value="{{ question.id }}">
+                    <input type="hidden" name="action" value="finish">
+                    <input type="hidden" name="answer" value="">
+                    <button type="submit" class="btn btn-success" id="confirmFinishBtn">Sim, finalizar!</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar ENCERRAR -->
+<div class="modal fade" id="confirmEndModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content glass-effect">
+            <div class="modal-header">
+                <h5 class="main-title">Encerrar Simulado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="description-text">Tem certeza que deseja encerrar o simulado? <strong>Todo o seu progresso será perdido.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continuar Prova</button>
+                <a href="/simulado/cancel" class="btn btn-danger">Sim, encerrar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ########## LÓGICA DOS TIMERS ##########
+    let generalTimeLeft = parseInt({{ general_time_left }}) || 0;
+    const generalTimerElement = document.getElementById('general-timer');
+    const timerContainer = document.getElementById('timer-container'); // Pega o container do timer
+    const form = document.getElementById('questionForm');
+    let timerInterval; // Declara a variável do intervalo aqui para ser acessível em toda a função
+
+    function formatTime(seconds) {
+        let minutes = Math.floor(seconds / 60);
+        let secs = seconds % 60;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        secs = secs < 10 ? '0' + secs : secs;
+        return `${minutes}:${secs}`;
+    }
+
+    function updateTimer() {
+        // Timer Geral
+        if (generalTimeLeft <= 0) {
+            clearInterval(timerInterval); // Para o contador
+            
+            // APLICA AS CORES FINAIS QUANDO O TEMPO ACABA
+            timerContainer.style.backgroundColor = 'white'; // Fundo branco
+            timerContainer.style.color = 'red'; // Fonte vermelha
+            generalTimerElement.textContent = "00:00";
+            
+            Toastify({ 
+                text: "O tempo para esta etapa acabou!", 
+                duration: 5000, 
+                gravity: "top", 
+                position: "center", 
+                backgroundColor: "var(--accent-color)" 
+            }).showToast();
+            
+            // Auto-submit quando o tempo acabar
+            setTimeout(() => {
+                const finishInput = document.createElement('input');
+                finishInput.type = 'hidden';
+                finishInput.name = 'action';
+                finishInput.value = 'finish';
+                form.appendChild(finishInput);
+                form.submit();
+            }, 3000);
+            return;
+        } 
+        
+        generalTimerElement.textContent = formatTime(generalTimeLeft);
+        generalTimeLeft--;
+    }
+    
+    if (generalTimerElement) {
+        generalTimerElement.textContent = formatTime(generalTimeLeft);
+        timerInterval = setInterval(updateTimer, 1000); // Atribui o intervalo à variável
+    }
+
+    // ########## LÓGICA DO ALERTA DE SUGESTÃO DE TEMPO ##########
+    const avgTimePerQuestion = {{ config.avg_time_per_question * 60 * 1000 }};
+    const suggestionMessage = "{{ config.time_suggestion }}";
+    if (avgTimePerQuestion > 0) {
+        setTimeout(() => {
+            Toastify({ 
+                text: suggestionMessage, 
+                duration: 6000, 
+                gravity: "bottom", 
+                position: "center", 
+                backgroundColor: "var(--light-accent)", 
+                style: { color: "var(--text-primary)" } 
+            }).showToast();
+        }, avgTimePerQuestion);
+    }
+
+    // ########## LÓGICA: VALIDAÇÃO DE RESPOSTA SELECIONADA ##########
+    if (form) {
+        const navigationButtons = form.querySelectorAll('button[type="submit"]');
+
+        navigationButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                const isAnswerSelected = form.querySelector('input[name="answer"]:checked');
+
+                if (!isAnswerSelected) {
+                    event.preventDefault();
+                    Toastify({
+                        text: "Você precisa escolher uma alternativa para continuar.",
+                        duration: 3500,
+                        gravity: "top",
+                        position: "center",
+                        backgroundColor: "#f44336",
+                        stopOnFocus: true,
+                    }).showToast();
+                }
+            });
+        });
+
+        // ########## LÓGICA ADICIONAL PARA O MODAL DE FINALIZAÇÃO ##########
+        const confirmFinishBtn = document.getElementById('confirmFinishBtn');
+        if (confirmFinishBtn) {
+            const finishForm = confirmFinishBtn.closest('form');
+            const answerInput = finishForm.querySelector('input[name="answer"]');
+
+            confirmFinishBtn.addEventListener('click', function() {
+                const currentAnswer = form.querySelector('input[name="answer"]:checked');
+                if (currentAnswer) {
+                    answerInput.value = currentAnswer.value;
+                }
+            });
+        }
+    }
+});
+</script>
+{% endblock %}
+
+{% block scripts %}
+{# Este bloco pode ser deixado em branco ou removido, pois o script foi movido para cima #}
+{% endblock %}

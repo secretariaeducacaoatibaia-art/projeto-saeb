@@ -1,0 +1,491 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="content-card text-center mb-5">
+        <div class="hero-content">
+            <div class="hero-icon mb-4">
+                <i class="fas fa-graduation-cap" style="font-size: 4rem; color: var(--primary-color);"></i>
+            </div>
+            <h1 class="hero-title mb-3">Sistema de Simulados SAEB</h1>
+            <p class="hero-subtitle">A plataforma completa para o 5º Ano do Ensino Fundamental</p>
+            <div class="hero-divider"></div>
+        </div>
+    </div>
+
+    <!-- Mensagem de erro para código inválido -->
+    {% if error %}
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            <div class="error-alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                {{ error }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Cards Principais -->
+    <div class="row g-4 mb-5">
+        <!-- Card Para Escolas -->
+        <div class="col-lg-6">
+            <div class="service-card school-card">
+                <div class="card-icon">
+                    <i class="fas fa-school"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Para Escolas</h3>
+                    <p class="card-description">
+                        Acesse o painel administrativo para configurar simulados, 
+                        gerenciar questões e acompanhar o desempenho dos alunos em tempo real.
+                    </p>
+                    <div class="card-features">
+                        <div class="feature">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            <span>Relatórios Detalhados</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-cogs me-2"></i>
+                            <span>Configuração Flexível</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-users me-2"></i>
+                            <span>Gestão de Alunos</span>
+                        </div>
+                    </div>
+                    <a href="/login" class="card-button school-button">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Acessar Painel Administrativo
+                        <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+                <div class="card-decoration school-decoration"></div>
+            </div>
+        </div>
+        
+        <!-- Card Para Alunos -->
+        <div class="col-lg-6">
+            <div class="service-card student-card">
+                <div class="card-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Para Alunos</h3>
+                    <p class="card-description">
+                        Digite o código INEP da sua escola para acessar os simulados 
+                        personalizados e testar seus conhecimentos.
+                    </p>
+                    
+                    <form action="/start-simulation-by-code" method="post" class="student-form">
+                        <div class="form-group">
+                            <label class="form-label">Código da Escola (INEP)</label>
+                            <div class="input-container">
+                                <div class="input-icon">
+                                    <i class="fas fa-barcode"></i>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    name="school_code" 
+                                    class="form-input" 
+                                    placeholder="Digite o código de 8 dígitos" 
+                                    required 
+                                    minlength="8" 
+                                    maxlength="8"
+                                    pattern="[0-9]{8}"
+                                    title="Digite exatamente 8 números"
+                                >
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="card-button student-button">
+                            <i class="fas fa-play-circle me-2"></i>
+                            Iniciar Simulado
+                            <i class="fas fa-rocket ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="card-decoration student-decoration"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Informações Adicionais -->
+    <div class="content-card info-section">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="saeb-image-container">
+                    <img src="{{ url_for('static', path='/images/saeb.jpg') }}" 
+                         alt="Logo SAEB" 
+                         class="saeb-image">
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="info-content">
+                    <h2 class="info-title">Sistema SAEB</h2>
+                    <p class="info-description">
+                        O Sistema de Avaliação da Educação Básica é uma ferramenta fundamental 
+                        para diagnosticar a qualidade do ensino no Brasil. Nossa plataforma 
+                        oferece simulados que seguem os padrões oficiais do SAEB.
+                    </p>
+                    <div class="info-stats">
+                        <div class="stat">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Baseado no SAEB Oficial</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">5º</div>
+                            <div class="stat-label">Ano do Ensino Fundamental</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Disponível</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hero Section */
+    .hero-content {
+        padding: 2rem 0;
+    }
+
+    .hero-icon {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        color: var(--text-secondary);
+        font-weight: 400;
+        margin-bottom: 2rem;
+    }
+
+    .hero-divider {
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        margin: 0 auto;
+        border-radius: 2px;
+    }
+
+    /* Service Cards */
+    .service-card {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border-radius: 24px;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        transition: all 0.4s ease;
+        box-shadow: 
+            0 8px 32px rgba(102, 126, 234, 0.15),
+            0 4px 16px rgba(240, 147, 251, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 
+            0 25px 50px rgba(102, 126, 234, 0.2),
+            0 12px 24px rgba(240, 147, 251, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .card-icon {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-icon i {
+        font-size: 3.5rem;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .service-card:hover .card-icon i {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .card-title {
+        color: var(--text-primary);
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .card-description {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.6;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-features {
+        margin-bottom: 2rem;
+    }
+
+    .feature {
+        display: flex;
+        align-items: center;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .feature i {
+        color: var(--primary-color);
+        width: 20px;
+    }
+
+    /* Buttons */
+    .card-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .school-button {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .school-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        color: white;
+    }
+
+    .student-button {
+        background: linear-gradient(45deg, #059669, #10b981);
+        color: white;
+        box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+    }
+
+    .student-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(5, 150, 105, 0.6);
+        color: white;
+    }
+
+    /* Form Styling */
+    .student-form {
+        width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.9rem;
+    }
+
+    .input-container {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        z-index: 2;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        background: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+
+    .form-input::placeholder {
+        color: var(--text-light);
+    }
+
+    /* Error Alert */
+    .error-alert {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        color: #dc2626;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        animation: shake 0.5s ease-in-out;
+        font-weight: 500;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
+    /* Info Section */
+    .info-section {
+        margin-top: 4rem;
+    }
+
+    .info-content {
+        padding: 2rem;
+    }
+
+    .info-title {
+        color: var(--text-primary);
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-description {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    .info-stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Card Decorations */
+    .card-decoration {
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        opacity: 0.05;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+
+    .school-decoration {
+        background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+    }
+
+    .student-decoration {
+        background: radial-gradient(circle, #059669 0%, transparent 70%);
+    }
+
+    .service-card:hover .card-decoration {
+        opacity: 0.1;
+        transform: rotate(45deg);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .service-card {
+            padding: 2rem;
+        }
+
+        .info-stats {
+            justify-content: center;
+        }
+
+        .saeb-image {
+            max-width: 250px;
+        }
+
+        .info-content {
+            padding: 1rem;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+        }
+
+        .service-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}

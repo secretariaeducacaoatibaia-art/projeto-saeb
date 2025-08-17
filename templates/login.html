@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="login-card my-5">
+                <div class="login-card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle login-icon"></i>
+                        <h3 class="login-title mt-3">Acesso ao Sistema</h3>
+                    </div>
+
+                    {% if error %}
+                    <div class="login-alert" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+                    </div>
+                    {% endif %}
+
+                    <form action="/login" method="post" class="login-form">
+                        <div class="mb-3">
+                            <label for="username" class="login-label">Usuário</label>
+                            <div class="input-container">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" 
+                                       class="login-input" 
+                                       id="username" 
+                                       name="username" 
+                                       placeholder="Digite seu usuário"
+                                       required
+                                       autocomplete="off"> <!-- MODIFICAÇÃO AQUI -->
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="login-label">Senha</label>
+                            <div class="input-container">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" 
+                                       class="login-input" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Digite sua senha"
+                                       required
+                                       autocomplete="off"> <!-- MODIFICAÇÃO AQUI -->
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="login-button">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Entrar no Sistema
+                                <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="login-footer mt-4">
+                        <p class="footer-text">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Acesso restrito a administradores
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Login Card */
+    .login-card {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 24px;
+        box-shadow: 
+            0 20px 40px rgba(102, 126, 234, 0.2),
+            0 8px 16px rgba(240, 147, 251, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 
+            0 30px 60px rgba(102, 126, 234, 0.25),
+            0 12px 24px rgba(240, 147, 251, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .login-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.8s;
+    }
+
+    .login-card:hover::before {
+        left: 100%;
+    }
+
+    .login-card-body {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Icon and Title */
+    .login-icon {
+        font-size: 4rem;
+        color: var(--primary-color);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .login-title {
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 1.8rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form Elements */
+    .login-form {
+        position: relative;
+    }
+
+    .login-label {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.95rem;
+    }
+
+    .input-container {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        z-index: 2;
+        font-size: 1rem;
+    }
+
+    .login-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .login-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        background: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .login-input::placeholder {
+        color: var(--text-light);
+        font-weight: 400;
+    }
+
+    /* Login Button */
+    .login-button {
+        width: 100%;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        padding: 1.2rem 2rem;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .login-button:hover::before {
+        left: 100%;
+    }
+
+    .login-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+    }
+
+    .login-button:active {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(102, 126, 234, 0.5);
+    }
+
+    /* Alert */
+    .login-alert {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #dc2626;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+        animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
+    /* Footer */
+    .login-footer {
+        text-align: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top: 1.5rem;
+    }
+
+    .footer-text {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Floating Elements for Login */
+    .login-decoration {
+        position: fixed;
+        opacity: 0.05;
+        pointer-events: none;
+        animation: floatLogin 6s ease-in-out infinite;
+        color: var(--primary-color);
+    }
+
+    .login-decoration.dec-1 {
+        top: 20%;
+        left: 10%;
+        font-size: 2rem;
+        animation-delay: -1s;
+    }
+
+    .login-decoration.dec-2 {
+        top: 60%;
+        right: 15%;
+        font-size: 1.5rem;
+        animation-delay: -3s;
+    }
+
+    .login-decoration.dec-3 {
+        bottom: 30%;
+        left: 20%;
+        font-size: 1.8rem;
+        animation-delay: -2s;
+    }
+
+    @keyframes floatLogin {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        33% { transform: translateY(-15px) rotate(3deg); }
+        66% { transform: translateY(-8px) rotate(-2deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 576px) {
+        .login-card-body {
+            padding: 2rem !important;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+        }
+
+        .login-icon {
+            font-size: 3rem;
+        }
+
+        .login-input {
+            padding: 1rem 1rem 1rem 2.5rem;
+        }
+
+        .input-icon {
+            left: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .login-button {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* Focus States for Accessibility */
+    .login-input:focus,
+    .login-button:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+
+    /* Loading State */
+    .login-button.loading {
+        position: relative;
+        color: transparent;
+    }
+
+    .login-button.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        border: 2px solid transparent;
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<!-- Decorações flutuantes -->
+<i class="fas fa-lock login-decoration dec-1"></i>
+<i class="fas fa-user-shield login-decoration dec-2"></i>
+<i class="fas fa-key login-decoration dec-3"></i>
+
+<script>
+    // Adiciona estado de carregamento ao botão
+    document.querySelector('.login-form').addEventListener('submit', function() {
+        const button = document.querySelector('.login-button');
+        button.classList.add('loading');
+        button.disabled = true;
+    });
+
+    // Animação de entrada e LIMPA OS CAMPOS
+    document.addEventListener('DOMContentLoaded', function() {
+        // LIMPAR CAMPOS DO FORMULÁRIO (JÁ EXISTENTE)
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        
+        // Animação existente
+        const card = document.querySelector('.login-card');
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease-out';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100);
+        
+        // Também limpa quando a página ganha foco (quando volta de outra aba)
+        window.addEventListener('focus', function() {
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        });
+    });
+</script>
+{% endblock %}

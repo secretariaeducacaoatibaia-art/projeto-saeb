@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="content-card glass-effect">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="main-title mb-0">Painel da Escola: {{ school.name }}</h2>
+            <a href="/logout" class="btn btn-outline-secondary btn-sm"><i class="fas fa-sign-out-alt me-1"></i>Sair</a>
+        </div>
+
+        <div class="row">
+            <!-- Coluna de Configurações e Link -->
+            <div class="col-lg-5">
+                <div class="content-card glass-effect mb-4">
+                    <div class="card-header bg-primary text-white p-3">
+                        <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Configurações do Simulado</h5>
+                    </div>
+                    <div class="card-body p-3">
+                        <form id="configForm">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="form-label subtitle-text">Questões de Português</label>
+                                    <input type="number" name="portuguese_questions" class="form-control" value="{{ config.portuguese_questions }}" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label subtitle-text">Questões de Matemática</label>
+                                    <input type="number" name="math_questions" class="form-control" value="{{ config.math_questions }}" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label subtitle-text">Tempo Português (min)</label>
+                                    <input type="number" name="portuguese_time" class="form-control" value="{{ config.portuguese_time }}" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label subtitle-text">Tempo Matemática (min)</label>
+                                    <input type="number" name="math_time" class="form-control" value="{{ config.math_time }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label subtitle-text">Nº de Opções</label>
+                                    <select name="num_options" class="form-select">
+                                        <option value="3" {% if config.num_options == 3 %}selected{% endif %}>3</option>
+                                        <option value="4" {% if config.num_options == 4 %}selected{% endif %}>4</option>
+                                        <option value="5" {% if config.num_options == 5 %}selected{% endif %}>5</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label subtitle-text">Média tempo/pergunta (min)</label>
+                                    <input type="number" name="avg_time_per_question" class="form-control" value="{{ config.avg_time_per_question }}" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label subtitle-text">Frase de Sugestão de Tempo</label>
+                                    <input type="text" name="time_suggestion" class="form-control" value="{{ config.time_suggestion }}">
+                                </div>
+                                <hr class="my-3">
+                                <div class="form-check form-switch mb-2 ms-2">
+                                    <input class="form-check-input" type="checkbox" name="show_final_score" value="true" id="showScoreSwitch" {% if config.show_final_score %}checked{% endif %}>
+                                    <label class="form-check-label description-text" for="showScoreSwitch">Aluno vê a nota final?</label>
+                                </div>
+                                <div class="form-check form-switch mb-3 ms-2">
+                                    <input class="form-check-input" type="checkbox" name="save_student_info" value="true" id="saveInfoSwitch" {% if config.save_student_info %}checked{% endif %}>
+                                    <label class="form-check-label description-text" for="saveInfoSwitch">Salvar as informações dos alunos?</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mt-3"><i class="fas fa-save me-2"></i>Salvar Configurações</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="content-card glass-effect">
+                    <div class="card-header bg-success text-white p-3">
+                        <h5 class="mb-0"><i class="fas fa-link me-2"></i>Link Exclusivo do Simulado</h5>
+                    </div>
+                    <div class="card-body p-3">
+                        <p class="description-text">Compartilhe este link com seus alunos:</p>
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="{{ request.url.scheme }}://{{ request.url.netloc }}/simulado/{{ config.simulation_link }}" id="simulationLink" readonly>
+                            <button class="btn btn-outline-secondary" onclick="copyLink()" title="Copiar Link"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Coluna de Resultados -->
+            <div class="col-lg-7">
+                <div class="content-card glass-effect">
+                    <div class="card-header p-3">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Resultados dos Alunos</h5>
+                    </div>
+                    <div class="card-body p-3">
+                        <form action="/school/dashboard" method="get" class="row g-2 mb-3">
+                            <div class="col">
+                                <input type="text" name="filter_name" class="form-control" placeholder="Filtrar por nome do aluno..." value="{{ filter_name }}">
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">Filtrar</button>
+                            </div>
+                        </form>
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Aluno</th>
+                                        <th>Português</th>
+                                        <th>Matemática</th>
+                                        <th>Data/Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results %}
+                                    <tr>
+                                        <td>{{ result.student_name }}</td>
+                                        <td>{{ result.portuguese_score }} / {{ result.portuguese_total }}</td>
+                                        <td>{{ result.math_score }} / {{ result.math_total }}</td>
+                                        <td>{{ result.completion_time.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">Nenhum resultado encontrado.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyLink() {
+    navigator.clipboard.writeText(document.getElementById("simulationLink").value).then(() => {
+        Toastify({ 
+            text: "Link copiado!", 
+            duration: 2000, 
+            gravity: "top", 
+            position: "right", 
+            backgroundColor: "var(--primary-color)" 
+        }).showToast();
+    });
+}
+
+document.getElementById('configForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    
+    // Garantir que os checkboxes não marcados enviem 'false'
+    if (!formData.has('show_final_score')) formData.append('show_final_score', 'false');
+    if (!formData.has('save_student_info')) formData.append('save_student_info', 'false');
+
+    fetch('/school/config/update', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        Toastify({
+            text: data.message,
+            duration: 2000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "var(--primary-color)"
+        }).showToast();
+    })
+    .catch(error => {
+        Toastify({ 
+            text: "Erro ao salvar!", 
+            duration: 2000, 
+            gravity: "top", 
+            position: "right", 
+            backgroundColor: "var(--accent-color)" 
+        }).showToast();
+    });
+});
+</script>
+{% endblock %}

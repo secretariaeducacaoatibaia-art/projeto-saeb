@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+sqlalchemy
+jinja2
+a2wsgi
+PyJWT
+python-multipart
+gunicorn

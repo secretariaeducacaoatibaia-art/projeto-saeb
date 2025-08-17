@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="content-card glass-effect" style="max-width: 900px; margin: auto;">
+        <div class="card-header-custom">
+            <h2 class="section-title">
+                <i class="fas fa-edit me-3"></i>
+                {{ title }} - {{ subject.capitalize() }}
+            </h2>
+            <a href="/admin/questions?subject={{ subject }}" class="action-btn back-btn">
+                <i class="fas fa-arrow-left me-2"></i>
+                Voltar para a Lista
+            </a>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <form action="/admin/question/save?id={{ question.id if question else '' }}" method="post" id="questionForm">
+                <input type="hidden" name="subject" value="{{ subject }}">
+
+                <!-- Campo Texto da Pergunta -->
+                <div class="form-group mb-4">
+                    <label for="question_text" class="form-label-custom">Texto da Pergunta</label>
+                    <textarea class="form-control-custom" id="question_text" name="question_text" rows="6" required>{{ question.question_text if question else '' }}</textarea>
+                </div>
+
+                <!-- Campos das Alternativas -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="option_a" class="form-label-custom">Alternativa A</label>
+                            <input type="text" class="form-control-custom" id="option_a" name="option_a" required value="{{ question.option_a if question else '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="option_b" class="form-label-custom">Alternativa B</label>
+                            <input type="text" class="form-control-custom" id="option_b" name="option_b" required value="{{ question.option_b if question else '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="option_c" class="form-label-custom">Alternativa C</label>
+                            <input type="text" class="form-control-custom" id="option_c" name="option_c" required value="{{ question.option_c if question else '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="option_d" class="form-label-custom">Alternativa D</label>
+                            <input type="text" class="form-control-custom" id="option_d" name="option_d" required value="{{ question.option_d if question else '' }}">
+                        </div>
+                    </div>
+                     <div class="col-12">
+                        <div class="form-group">
+                            <label for="option_e" class="form-label-custom">Alternativa E (Opcional)</label>
+                            <input type="text" class="form-control-custom" id="option_e" name="option_e" value="{{ question.option_e if question else '' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campo Resposta Correta -->
+                <div class="form-group mb-4" style="max-width: 250px;">
+                    <label for="correct_answer" class="form-label-custom">Resposta Correta</label>
+                    <select class="form-select-custom" id="correct_answer" name="correct_answer" required>
+                        <option value="A" {% if question and question.correct_answer == 'A' %}selected{% endif %}>A</option>
+                        <option value="B" {% if question and question.correct_answer == 'B' %}selected{% endif %}>B</option>
+                        <option value="C" {% if question and question.correct_answer == 'C' %}selected{% endif %}>C</option>
+                        <option value="D" {% if question and question.correct_answer == 'D' %}selected{% endif %}>D</option>
+                        <option value="E" {% if question and question.correct_answer == 'E' %}selected{% endif %}>E</option>
+                    </select>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/admin/questions?subject={{ subject }}" class="btn btn-secondary btn-lg">Cancelar</a>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save me-2"></i>
+                        Salvar Questão
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .content-card { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid var(--glass-border); }
+    .card-header-custom { padding: 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+    .form-label-custom { font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem; }
+    .form-control-custom, .form-select-custom {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    .form-control-custom:focus, .form-select-custom:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+    .back-btn { background: rgba(108, 117, 125, 0.2); border: 1px solid rgba(108, 117, 125, 0.3); color: var(--text-primary); padding: 0.5rem 1rem; text-decoration: none; border-radius: 8px; }
+</style>
+{% endblock %}
+
+{% block scripts %}
+{# Bloco de scripts intencionalmente vazio, pois o script de embaralhar foi removido daqui. #}
+{% endblock %}

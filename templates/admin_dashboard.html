@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Header Section -->
+    <div class="content-card admin-header mb-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
+            <div class="header-title">
+                <h1 class="dashboard-title"><i class="fas fa-chart-line me-3"></i>Visão Geral do Sistema</h1>
+                <p class="dashboard-subtitle text-secondary">Painel Administrativo - Sistema SAEB</p>
+            </div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt me-2"></i>Sair</a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="stat-card schools-stat">
+                <div class="stat-icon"><i class="fas fa-school"></i></div>
+                <div class="stat-content">
+                    <h5 class="stat-title text-secondary">Escolas Cadastradas</h5>
+                    <p class="stat-number">{{ schools|length }}</p>
+                </div>
+                <div class="stat-decoration"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card portuguese-stat">
+                <div class="stat-icon"><i class="fas fa-book"></i></div>
+                <div class="stat-content">
+                    <h5 class="stat-title text-secondary">Questões de Português</h5>
+                    <p class="stat-number">{{ questions_count.portugues }}</p>
+                </div>
+                <div class="stat-decoration"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card math-stat">
+                <div class="stat-icon"><i class="fas fa-calculator"></i></div>
+                <div class="stat-content">
+                    <h5 class="stat-title text-secondary">Questões de Matemática</h5>
+                    <p class="stat-number">{{ questions_count.matematica }}</p>
+                </div>
+                <div class="stat-decoration"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schools Management Card -->
+    <div class="content-card schools-management">
+        <div class="card-header-custom">
+            <div class="header-left">
+                <h4 class="section-title"><i class="fas fa-school me-3"></i>Gerenciamento de Escolas</h4>
+                <p class="section-subtitle text-secondary">Administre todas as escolas cadastradas no sistema</p>
+            </div>
+            <div class="header-actions">
+                <a href="/admin/questions?subject=portugues" class="action-btn portuguese-btn"><i class="fas fa-book me-2"></i>Questões Português</a>
+                <a href="/admin/questions?subject=matematica" class="action-btn math-btn"><i class="fas fa-calculator me-2"></i>Questões Matemática</a>
+                <button class="action-btn primary-btn" data-bs-toggle="modal" data-bs-target="#addSchoolModal"><i class="fas fa-plus me-2"></i>Nova Escola</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>INEP</th>
+                            <th>Nome da Escola</th>
+                            <th>Login</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for school in schools %}
+                        <tr class="table-row">
+                            <td class="inep-cell"><span class="inep-code">{{ school.inep_code }}</span></td>
+                            <td class="school-name-cell">{{ school.name }}</td>
+                            <td class="login-cell">{{ school.login }}</td>
+                            <td class="actions-cell">
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view view-school-btn" data-bs-toggle="modal" data-bs-target="#viewSchoolModal" data-name="{{ school.name }}" data-inep="{{ school.inep_code }}" data-address="{{ school.address }}" data-neighborhood="{{ school.neighborhood }}" data-cep="{{ school.cep }}" data-phone="{{ school.phone }}" data-principal="{{ school.principal }}" data-email="{{ school.email }}" title="Visualizar"><i class="fas fa-eye"></i></button>
+                                    <a href="/admin/school/form/{{ school.id }}" class="btn-action btn-edit" title="Alterar"><i class="fas fa-edit"></i></a>
+                                    <button class="btn-action btn-delete delete-btn" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" data-school-id="{{ school.id }}" data-school-name="{{ school.name }}" title="Excluir"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================= MODAIS ======================= -->
+<div class="modal fade" id="addSchoolModal" tabindex="-1" aria-labelledby="addSchoolModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content glass-effect">
+            <div class="modal-header">
+                <h5 class="modal-title main-title" id="addSchoolModalLabel">Cadastrar Nova Escola</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/admin/schools/add" method="post" autocomplete="off">
+                    <div class="row g-3">
+                        <div class="col-md-8"><label class="form-label">Nome da Escola</label><input type="text" name="name" class="form-control" required></div>
+                        <div class="col-md-4"><label class="form-label">Código INEP</label><input type="text" name="inep_code" class="form-control" required></div>
+                        <div class="col-12"><label class="form-label">Endereço</label><input type="text" name="address" class="form-control" required></div>
+                        <div class="col-md-6"><label class="form-label">Bairro</label><input type="text" name="neighborhood" class="form-control" required></div>
+                        <div class="col-md-6"><label class="form-label">CEP</label><input type="text" name="cep" class="form-control" required></div>
+                        <div class="col-md-6"><label class="form-label">Telefone</label><input type="text" name="phone" class="form-control"></div>
+                        <div class="col-md-6"><label class="form-label">Nome do Diretor(a)</label><input type="text" name="principal" class="form-control"></div>
+                        <div class="col-12"><label class="form-label">E-mail</label><input type="email" name="email" class="form-control"></div>
+                        <hr>
+                        <div class="col-md-4"><label class="form-label">Login</label><input type="text" name="login" class="form-control" required></div>
+                        <div class="col-md-4"><label class="form-label">Senha</label><input type="password" name="password" class="form-control" required></div>
+                        <div class="col-md-4"><label class="form-label">Confirmar Senha</label><input type="password" name="confirm_password" class="form-control" required></div>
+                    </div>
+                    <div class="modal-footer mt-4">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Escola</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewSchoolModal" tabindex="-1" aria-labelledby="viewSchoolModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass-effect">
+            <div class="modal-header"><h5 class="modal-title main-title" id="viewSchoolName"></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <p><strong>INEP:</strong> <span id="viewSchoolInep"></span></p>
+                <p><strong>Endereço:</strong> <span id="viewSchoolAddress"></span></p>
+                <p><strong>Diretor(a):</strong> <span id="viewSchoolPrincipal"></span></p>
+                <p><strong>Telefone:</strong> <span id="viewSchoolPhone"></span></p>
+                <p><strong>Email:</strong> <span id="viewSchoolEmail"></span></p>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass-effect">
+            <div class="modal-header"><h5 class="modal-title main-title" id="deleteConfirmModalLabel">Confirmar Exclusão</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body"><p>Tem certeza que deseja excluir a escola <strong id="schoolNameToDelete"></strong>? Esta ação não pode ser desfeita.</p></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="post" action=""><button type="submit" class="btn btn-danger">Sim, Excluir</button></form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-bg: #BFDBFE;
+        --accent-color: #F472B6;
+        --text-primary: #000000;
+        --text-secondary: #1E3A8A;
+        --glass-bg: linear-gradient(145deg, rgba(191, 219, 254, 0.3), rgba(249, 168, 212, 0.3));
+        --glass-border: rgba(255, 255, 255, 0.4);
+    }
+    .admin-header { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; padding: 2rem; box-shadow: 0 3px 16px rgba(0, 0, 0, 0.08); border: 1px solid var(--glass-border); transition: all 0.3s ease; }
+    .admin-header:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); }
+    .dashboard-title { color: var(--text-primary) !important; font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.2px; }
+    .dashboard-subtitle { color: var(--text-secondary) !important; font-size: 1.1rem; margin: 0; font-weight: 400; }
+    .logout-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--text-primary); padding: 0.75rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.3); color: var(--text-primary); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4); }
+    .stat-card { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; padding: 2rem; border: 1px solid var(--glass-border); position: relative; overflow: hidden; height: 100%; transition: all 0.3s ease; box-shadow: 0 3px 16px rgba(0, 0, 0, 0.08); }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); }
+    .stat-icon { position: absolute; top: 1.5rem; right: 1.5rem; opacity: 0.3; }
+    .stat-icon i { font-size: 3rem; color: var(--accent-color); }
+    .stat-content { position: relative; z-index: 2; }
+    .stat-title { color: var(--text-secondary) !important; font-size: 1rem; font-weight: 500; margin-bottom: 1rem; }
+    .stat-number { color: var(--text-primary) !important; font-size: 3rem; font-weight: 700; margin: 0; }
+    .stat-decoration { position: absolute; bottom: -30px; right: -30px; width: 100px; height: 100px; border-radius: 50%; opacity: 0.1; transition: all 0.3s ease; }
+    .schools-stat .stat-decoration { background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%); }
+    .portuguese-stat .stat-decoration { background: radial-gradient(circle, var(--text-secondary) 0%, transparent 70%); }
+    .math-stat .stat-decoration { background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%); }
+    .stat-card:hover .stat-decoration { opacity: 0.2; transform: scale(1.1); }
+    .schools-management { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 3px 16px rgba(0, 0, 0, 0.08); border: 1px solid var(--glass-border); transition: all 0.3s ease; }
+    .schools-management:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); }
+    .card-header-custom { padding: 2rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; }
+    .section-title { color: var(--text-primary) !important; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .section-subtitle { color: var(--text-secondary) !important; margin: 0; font-size: 0.95rem; }
+    .header-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .action-btn { padding: 0.75rem 1.25rem; border-radius: 12px; text-decoration: none; font-weight: 500; font-size: 0.9rem; border: none; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; white-space: nowrap; }
+    .portuguese-btn { background: rgba(30, 58, 138, 0.2); border: 1px solid rgba(30, 58, 138, 0.3); color: var(--text-primary); }
+    .portuguese-btn:hover { background: rgba(30, 58, 138, 0.3); color: var(--text-primary); transform: translateY(-2px); }
+    .math-btn { background: rgba(244, 114, 182, 0.2); border: 1px solid rgba(244, 114, 182, 0.3); color: var(--text-primary); }
+    .math-btn:hover { background: rgba(244, 114, 182, 0.3); color: var(--text-primary); transform: translateY(-2px); }
+    .primary-btn { background: var(--accent-color); border: none; color: var(--text-primary); box-shadow: 0 4px 15px rgba(244, 114, 182, 0.4); }
+    .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(244, 114, 182, 0.6); color: var(--text-primary); }
+    .table-container { padding: 2rem; overflow-x: auto; }
+    .custom-table { width: 100%; border-collapse: separate; border-spacing: 0 0.5rem; margin-top: 1rem; }
+    .custom-table thead th { background: var(--glass-bg); color: var(--text-secondary) !important; font-weight: 600; padding: 1rem 1.5rem; border: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .custom-table thead th:first-child { border-radius: 12px 0 0 12px; }
+    .custom-table thead th:last-child { border-radius: 0 12px 12px 0; }
+    .table-row { background: var(--glass-bg); transition: all 0.3s ease; border-radius: 12px; animation: fadeInUp 0.6s ease-out forwards; opacity: 0; transform: translateY(20px); }
+    .table-row:hover { background: linear-gradient(145deg, rgba(191, 219, 254, 0.4), rgba(249, 168, 212, 0.4)); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); }
+    .table-row td { padding: 1.25rem 1.5rem; border: none; color: var(--text-primary) !important; vertical-align: middle; }
+    .table-row td:first-child { border-radius: 12px 0 0 12px; }
+    .table-row td:last-child { border-radius: 0 12px 12px 0; }
+    .table-row:nth-child(1) { animation-delay: 0.1s; } .table-row:nth-child(2) { animation-delay: 0.2s; } .table-row:nth-child(3) { animation-delay: 0.3s; }
+    .inep-code { background: var(--accent-color); color: var(--text-primary); padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; font-family: 'Courier New', monospace; }
+    .school-name-cell { font-weight: 500; font-size: 0.95rem; }
+    .login-cell { color: var(--text-secondary) !important; font-family: 'Courier New', monospace; font-size: 0.9rem; }
+    .action-buttons { display: flex; gap: 0.5rem; justify-content: flex-start; }
+    .btn-action { width: 36px; height: 36px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.3s ease; text-decoration: none; font-size: 0.9rem; }
+    .btn-view { background: rgba(30, 58, 138, 0.2); border: 1px solid rgba(30, 58, 138, 0.3); color: var(--text-primary); }
+    .btn-view:hover { background: rgba(30, 58, 138, 0.3); color: var(--text-primary); transform: scale(1.1); }
+    .btn-edit { background: rgba(244, 114, 182, 0.2); border: 1px solid rgba(244, 114, 182, 0.3); color: var(--text-primary); }
+    .btn-edit:hover { background: rgba(244, 114, 182, 0.3); color: var(--text-primary); transform: scale(1.1); }
+    .btn-delete { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--text-primary); }
+    .btn-delete:hover { background: rgba(239, 68, 68, 0.3); color: var(--text-primary); transform: scale(1.1); }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // SCRIPT PARA NOTIFICAÇÕES DE SUCESSO
+    const urlParams = new URLSearchParams(window.location.search);
+    const successMessage = urlParams.get('success');
+    if (successMessage) {
+        Toastify({
+            text: successMessage,
+            duration: 4000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#28a745", // Verde sucesso
+            stopOnFocus: true,
+        }).showToast();
+        // Limpa a URL para não mostrar a mensagem de novo ao recarregar
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Script para o Modal de Visualização
+    const viewSchoolModal = document.getElementById('viewSchoolModal');
+    if (viewSchoolModal) {
+        viewSchoolModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            document.getElementById('viewSchoolName').textContent = button.getAttribute('data-name');
+            document.getElementById('viewSchoolInep').textContent = button.getAttribute('data-inep');
+            document.getElementById('viewSchoolPrincipal').textContent = button.getAttribute('data-principal');
+            document.getElementById('viewSchoolPhone').textContent = button.getAttribute('data-phone');
+            document.getElementById('viewSchoolEmail').textContent = button.getAttribute('data-email');
+            const address = `${button.getAttribute('data-address')}, ${button.getAttribute('data-neighborhood')} - CEP: ${button.getAttribute('data-cep')}`;
+            document.getElementById('viewSchoolAddress').textContent = address;
+        });
+    }
+
+    // Script para o Modal de Exclusão
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+    if (deleteConfirmModal) {
+        deleteConfirmModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const schoolId = button.getAttribute('data-school-id');
+            const schoolName = button.getAttribute('data-school-name');
+            
+            const deleteForm = document.getElementById('deleteForm');
+            deleteForm.action = `/admin/schools/delete/${schoolId}`;
+            
+            const schoolNameToDelete = document.getElementById('schoolNameToDelete');
+            schoolNameToDelete.textContent = schoolName;
+        });
+    }
+
+    // Animação dos números das estatísticas
+    function animateNumbers() {
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach(element => {
+            const finalNumber = parseInt(element.textContent);
+            if (isNaN(finalNumber)) return;
+            const duration = 1500;
+            const increment = finalNumber / (duration / 16);
+            let currentNumber = 0;
+            
+            const counter = setInterval(() => {
+                currentNumber += increment;
+                if (currentNumber >= finalNumber) {
+                    element.textContent = finalNumber;
+                    clearInterval(counter);
+                } else {
+                    element.textContent = Math.floor(currentNumber);
+                }
+            }, 16);
+        });
+    }
+    setTimeout(animateNumbers, 500);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar do Admin -->
+        <nav class="sidebar-nav">
+            <div class="sidebar-container">
+                <div class="sidebar-header">
+                    <h4 class="sidebar-title"><i class="fas fa-crown sidebar-crown"></i>Admin</h4>
+                    <div class="sidebar-divider"></div>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a class="nav-link-custom" href="/admin/dashboard"><div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div><span class="nav-text">Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link-custom {% if subject == 'portugues' %}active{% endif %}" href="/admin/questions?subject=portugues"><div class="nav-icon"><i class="fas fa-book"></i></div><span class="nav-text">Português</span></a></li>
+                    <li class="nav-item"><a class="nav-link-custom {% if subject == 'matematica' %}active{% endif %}" href="/admin/questions?subject=matematica"><div class="nav-icon"><i class="fas fa-calculator"></i></div><span class="nav-text">Matemática</span></a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Header da Página -->
+            <div class="content-card page-header mb-4">
+                <div class="header-content">
+                    <div class="header-left">
+                        <h1 class="page-title"><i class="fas fa-{% if subject == 'portugues' %}book{% else %}calculator{% endif %} me-3"></i>Banco de Questões - {{ subject.capitalize() }}</h1>
+                        <p class="page-subtitle">Gerencie as questões de {{ subject }} do sistema</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#shuffleConfirmModal"><i class="fas fa-random me-2"></i>Embaralhar Respostas da Página</button>
+                        <a href="/admin/question/form?subject={{ subject }}" class="add-question-btn"><i class="fas fa-plus me-2"></i>Nova Questão</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Pesquisa -->
+            <div class="content-card search-card mb-4">
+                <div class="search-container">
+                    <div class="search-header"><h5 class="search-title"><i class="fas fa-search me-2"></i>Pesquisar Questões</h5></div>
+                    <form action="/admin/questions" method="get" class="search-form">
+                        <input type="hidden" name="subject" value="{{ subject }}">
+                        <div class="search-input-container">
+                            <div class="search-input-wrapper">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="search-input" name="search" placeholder="Digite para pesquisar no texto das questões..." value="{{ search }}">
+                            </div>
+                            <button type="submit" class="search-button"><i class="fas fa-search me-2"></i>Pesquisar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabela de Questões -->
+            <div class="content-card questions-table-card">
+                <div class="table-header">
+                    <h5 class="table-title"><i class="fas fa-list me-2"></i>Questões Cadastradas</h5>
+                    <div class="table-info">{% if questions %}{{ total_items }} questões encontradas{% endif %}</div>
+                </div>
+                <div class="custom-table-container">
+                    <table class="questions-table">
+                        <thead>
+                            <tr>
+                                <th class="id-column">#ID</th>
+                                <th class="question-column">Texto da Pergunta</th>
+                                <th class="answer-column">Resposta Correta</th>
+                                <th class="actions-column">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for question in questions %}
+                            <tr class="question-row" data-question-id="{{ question.id }}">
+                                <td class="id-cell"><span class="question-id">{{ question.id }}</span></td>
+                                <td class="question-cell">
+                                    <div class="question-text">
+                                        {{ question.question_text[:150] }}{% if question.question_text|length > 150 %}<span class="text-truncated">...</span>{% endif %}
+                                    </div>
+                                </td>
+                                <td class="answer-cell"><span class="correct-answer">{{ question.correct_answer }}</span></td>
+                                <td class="actions-cell">
+                                    <div class="action-buttons">
+                                        <a href="/admin/question/form?subject={{ subject }}&id={{ question.id }}" class="btn-action btn-edit" title="Editar Questão"><i class="fas fa-edit"></i></a>
+                                        <!-- BOTÃO DE EXCLUIR MODIFICADO -->
+                                        <button type="button" class="btn-action btn-delete" title="Excluir Questão"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteQuestionModal"
+                                                data-question-id="{{ question.id }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr class="no-results-row">
+                                <td colspan="4" class="no-results-cell">
+                                    <div class="no-results-content">
+                                        <i class="fas fa-search no-results-icon"></i>
+                                        <p class="no-results-text">Nenhuma questão encontrada</p>
+                                        <p class="no-results-subtitle">Tente ajustar os termos de pesquisa ou adicione uma nova questão</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Paginação -->
+            {% if total_pages > 1 %}
+            <div class="content-card pagination-card mt-4">
+                <nav aria-label="Navegação de páginas" class="pagination-nav">
+                    <ul class="custom-pagination">
+                        <li class="page-item {% if current_page == 1 %}disabled{% endif %}"><a class="page-link-custom prev-link" href="?subject={{ subject }}&search={{ search }}&page={{ current_page - 1 }}"><i class="fas fa-chevron-left me-1"></i>Anterior</a></li>
+                        {% for page_num in range(1, total_pages + 1) %}
+                        <li class="page-item {% if page_num == current_page %}active{% endif %}"><a class="page-link-custom" href="?subject={{ subject }}&search={{ search }}&page={{ page_num }}">{{ page_num }}</a></li>
+                        {% endfor %}
+                        <li class="page-item {% if current_page == total_pages %}disabled{% endif %}"><a class="page-link-custom next-link" href="?subject={{ subject }}&search={{ search }}&page={{ current_page + 1 }}">Próxima<i class="fas fa-chevron-right ms-1"></i></a></li>
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+<!-- ======================= MODAIS ======================= -->
+<!-- Modal de Confirmação para Embaralhar -->
+<div class="modal fade" id="shuffleConfirmModal" tabindex="-1" aria-labelledby="shuffleConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass-effect">
+            <div class="modal-header"><h5 class="modal-title main-title" id="shuffleConfirmModalLabel">Confirmar Ação</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja embaralhar as alternativas de <strong>TODAS</strong> as questões nesta página?</p>
+                <p class="text-danger"><strong>Atenção:</strong> Esta ação é permanente e não pode ser desfeita.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" id="confirmShuffleBtn">Sim, Embaralhar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- NOVO: Modal de Confirmação para Excluir Questão -->
+<div class="modal fade" id="deleteQuestionModal" tabindex="-1" aria-labelledby="deleteQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass-effect">
+            <div class="modal-header"><h5 class="modal-title main-title" id="deleteQuestionModalLabel">Confirmar Exclusão</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir a questão <strong id="questionIdToDelete"></strong>? Esta ação é irreversível.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteQuestionForm" method="post" action="">
+                    <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* TODO O SEU CSS ORIGINAL VAI AQUI. SEM ALTERAÇÕES. */
+    .container-fluid{padding:0;min-height:100vh}.row{margin:0;min-height:100vh}.sidebar-nav{background:rgba(255,255,255,0.25);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);border-right:1px solid rgba(255,255,255,0.3);width:280px;min-height:100vh;position:sticky;top:0;box-shadow:0 8px 32px rgba(102,126,234,0.15),0 4px 16px rgba(240,147,251,0.1),inset 0 1px 0 rgba(255,255,255,0.4)}.sidebar-container{padding:2rem 0}.sidebar-header{padding:0 2rem;margin-bottom:2rem}.sidebar-title{color:var(--text-primary);font-size:1.5rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;text-shadow:0 2px 4px rgba(0,0,0,0.1)}.sidebar-crown{color:#f59e0b!important;margin-right:0.5rem;font-size:1.3rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1))}.sidebar-divider{height:2px;background:linear-gradient(45deg,var(--primary-color),var(--accent-color));border-radius:1px;width:60px}.nav-menu{list-style:none;margin:0;padding:0}.nav-item{margin-bottom:0.5rem}.nav-link-custom{display:flex;align-items:center;padding:1rem 2rem;color:var(--text-secondary);text-decoration:none;transition:all .3s ease;position:relative;border-radius:0 25px 25px 0;margin-right:1rem}.nav-link-custom:hover{background:rgba(255,255,255,0.2);color:var(--text-primary);transform:translateX(5px)}.nav-link-custom.active{background:linear-gradient(45deg,var(--primary-color),var(--secondary-color));color:white;box-shadow:0 4px 15px rgba(102,126,234,0.4)}.nav-icon{width:24px;margin-right:1rem;text-align:center}.nav-text{font-weight:500;font-size:.95rem}.main-content{flex:1;padding:2rem;overflow-x:auto}.page-header{background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4)}.header-content{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.5rem;padding:2rem}.page-title{color:var(--text-primary);font-size:2.2rem;font-weight:700;margin-bottom:.5rem;text-shadow:0 2px 4px rgba(0,0,0,0.1)}.page-subtitle{color:var(--text-secondary);font-size:1.1rem;margin:0;font-weight:400}.header-actions{display:flex;align-items:center}.add-question-btn{background:linear-gradient(45deg,var(--primary-color),var(--secondary-color));color:white;padding:1rem 2rem;border-radius:12px;text-decoration:none;font-weight:600;font-size:1rem;transition:all .3s ease;box-shadow:0 4px 15px rgba(102,126,234,0.4);display:inline-flex;align-items:center;white-space:nowrap}.add-question-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(102,126,234,0.6);color:white}.search-card{background:rgba(255,255,255,0.22);border:1px solid rgba(255,255,255,0.3)}.search-container{padding:1.5rem}.search-header{margin-bottom:1.5rem}.search-title{color:var(--text-primary);font-size:1.2rem;font-weight:600;margin:0}.search-form{width:100%}.search-input-container{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap}.search-input-wrapper{flex:1;position:relative;min-width:300px}.search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-secondary);z-index:2}.search-input{width:100%;padding:1rem 1rem 1rem 3rem;background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.4);border-radius:12px;color:var(--text-primary);font-size:1rem;transition:all .3s ease}.search-input:focus{outline:none;border-color:var(--primary-color);background:rgba(255,255,255,0.4);box-shadow:0 0 0 3px rgba(102,126,234,0.2)}.search-input::placeholder{color:var(--text-light)}.search-button{background:rgba(102,126,234,0.2);border:1px solid rgba(102,126,234,0.3);color:var(--primary-color);padding:1rem 2rem;border-radius:12px;font-weight:500;cursor:pointer;transition:all .3s ease;white-space:nowrap}.search-button:hover{background:rgba(102,126,234,0.3);color:white;transform:translateY(-2px)}.questions-table-card{background:rgba(255,255,255,0.22);border:1px solid rgba(255,255,255,0.3)}.table-header{padding:1.5rem 2rem;border-bottom:1px solid rgba(255,255,255,0.2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}.table-title{color:var(--text-primary);font-size:1.3rem;font-weight:600;margin:0}.table-info{color:var(--text-secondary);font-size:.9rem;font-weight:500}.custom-table-container{padding:1.5rem;overflow-x:auto}.questions-table{width:100%;border-collapse:separate;border-spacing:0 .5rem}.questions-table thead th{background:rgba(255,255,255,0.2);color:var(--text-primary);font-weight:600;padding:1rem 1.5rem;border:none;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}.questions-table thead th:first-child{border-radius:12px 0 0 12px}.questions-table thead th:last-child{border-radius:0 12px 12px 0}.id-column{width:80px}.question-column{width:50%}.answer-column{width:120px}.actions-column{width:120px}.question-row{background:rgba(255,255,255,0.15);transition:all .3s ease;animation:fadeInUp .6s ease-out forwards;opacity:0;transform:translateY(20px)}.question-row:hover{background:rgba(255,255,255,0.25);transform:translateY(-2px);box-shadow:0 8px 25px rgba(102,126,234,0.2),0 4px 12px rgba(240,147,251,0.1)}.question-row td{padding:1.25rem 1.5rem;border:none;color:var(--text-primary);vertical-align:middle}.question-row td:first-child{border-radius:12px 0 0 12px}.question-row td:last-child{border-radius:0 12px 12px 0}.question-id{background:linear-gradient(45deg,var(--primary-color),var(--secondary-color));color:white;padding:.4rem .8rem;border-radius:8px;font-weight:600;font-size:.85rem;display:inline-block;min-width:40px;text-align:center}.question-text{line-height:1.5;font-size:.95rem;color:var(--text-primary)}.text-truncated{color:var(--text-light);font-style:italic}.correct-answer{background:rgba(5,150,105,0.2);border:1px solid rgba(5,150,105,0.3);color:#059669;padding:.4rem .8rem;border-radius:8px;font-weight:600;font-size:.9rem;text-transform:uppercase;display:inline-block}.action-buttons{display:flex;gap:.5rem;justify-content:flex-start}.btn-action{width:36px;height:36px;border-radius:8px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .3s ease;text-decoration:none;font-size:.9rem}.btn-edit{background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.3);color:#f59e0b}.btn-edit:hover{background:rgba(245,158,11,0.3);color:white;transform:scale(1.1)}.btn-delete{background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.3);color:#dc2626}.btn-delete:hover{background:rgba(239,68,68,0.3);color:white;transform:scale(1.1)}.delete-form{display:inline;margin:0}.no-results-row td{border-radius:12px}.no-results-content{text-align:center;padding:3rem 2rem}.no-results-icon{font-size:3rem;color:var(--text-light);margin-bottom:1rem}.no-results-text{color:var(--text-secondary);font-size:1.2rem;font-weight:600;margin-bottom:.5rem}.no-results-subtitle{color:var(--text-light);font-size:.95rem;margin:0}.pagination-card{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2)}.pagination-nav{padding:1.5rem;display:flex;justify-content:center}.custom-pagination{display:flex;list-style:none;margin:0;padding:0;gap:.5rem;align-items:center}.page-item.disabled .page-link-custom{opacity:.5;cursor:not-allowed;pointer-events:none}.page-link-custom{display:flex;align-items:center;padding:.75rem 1rem;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:var(--text-primary);text-decoration:none;font-weight:500;transition:all .3s ease;min-width:44px;justify-content:center}.page-link-custom:hover{background:rgba(255,255,255,0.3);color:var(--text-primary);transform:translateY(-2px)}.page-item.active .page-link-custom{background:linear-gradient(45deg,var(--primary-color),var(--secondary-color));color:white;box-shadow:0 4px 15px rgba(102,126,234,0.4)}.question-row:nth-child(1){animation-delay:.1s}.question-row:nth-child(2){animation-delay:.15s}.question-row:nth-child(3){animation-delay:.2s}.question-row:nth-child(4){animation-delay:.25s}.question-row:nth-child(5){animation-delay:.3s}@keyframes fadeInUp{to{opacity:1;transform:translateY(0)}}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Script para o Modal de Embaralhar
+    const confirmShuffleBtn = document.getElementById('confirmShuffleBtn');
+    if(confirmShuffleBtn) {
+        confirmShuffleBtn.addEventListener('click', function() {
+            const modalElement = document.getElementById('shuffleConfirmModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            const questionRows = document.querySelectorAll('.question-row');
+            const questionIds = Array.from(questionRows).map(row => row.dataset.questionId);
+
+            if (questionIds.length === 0) {
+                modalInstance.hide();
+                Toastify({ text: "Nenhuma questão para embaralhar.", backgroundColor: "#ffc107", position: "right", gravity: "top" }).showToast();
+                return;
+            }
+
+            fetch('/admin/questions/shuffle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question_ids: questionIds }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                modalInstance.hide();
+                Toastify({ text: data.message, duration: 3000, gravity: "top", position: "right", backgroundColor: "#28a745" }).showToast();
+                setTimeout(() => { window.location.reload(); }, 3000);
+            })
+            .catch(error => {
+                modalInstance.hide();
+                Toastify({ text: "Ocorreu um erro ao embaralhar.", backgroundColor: "#dc3545", position: "right", gravity: "top" }).showToast();
+            });
+        });
+    }
+
+    // NOVO SCRIPT para o Modal de Excluir
+    const deleteQuestionModal = document.getElementById('deleteQuestionModal');
+    if(deleteQuestionModal) {
+        deleteQuestionModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const questionId = button.getAttribute('data-question-id');
+            
+            const deleteForm = document.getElementById('deleteQuestionForm');
+            deleteForm.action = `/admin/question/delete/${questionId}`;
+            
+            const questionIdToDelete = document.getElementById('questionIdToDelete');
+            questionIdToDelete.textContent = `#${questionId}`;
+        });
+    }
+});
+</script>
+{% endblock %}

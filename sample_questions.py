@@ -1,0 +1,73 @@
+portuguese_questions = [
+    # 10 Originais
+    {
+        "subject": "portugues",
+        "question_text": "Leia o texto e responda:\n\nA raposa, com fome, viu um cacho de uvas e tentou pegá-lo. Como não conseguiu, disse: 'Ah, essas uvas estão verdes'.\n\nQual o motivo da raposa dizer que as uvas estavam verdes?",
+        "option_a": "Porque ela não gostava de uvas.", "option_b": "Porque ela não conseguiu alcançar as uvas.", "option_c": "Porque as uvas eram de uma cor diferente.", "option_d": "Porque um amigo disse a ela.", "correct_answer": "B"
+    },
+    {"subject": "portugues", "question_text": "Qual das palavras abaixo está escrita corretamente?", "option_a": "Cachoro", "option_b": "Pássaro", "option_c": "Geito", "option_d": "Oje", "correct_answer": "B"},
+    {"subject": "portugues", "question_text": "Na frase 'O menino joga bola alegremente', a palavra 'alegremente' é um:", "option_a": "Adjetivo", "option_b": "Substantivo", "option_c": "Verbo", "option_d": "Advérbio", "correct_answer": "D"},
+    {"subject": "portugues", "question_text": "Qual o sinônimo da palavra 'bonito'?", "option_a": "Feio", "option_b": "Grande", "option_c": "Belo", "option_d": "Triste", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Qual palavra é um substantivo próprio?", "option_a": "cidade", "option_b": "rio", "option_c": "Brasil", "option_d": "país", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "O que significa a expressão 'pão-duro'?", "option_a": "Uma pessoa generosa", "option_b": "Um pão velho", "option_c": "Um padeiro", "option_d": "Uma pessoa avarenta", "correct_answer": "D"},
+    {"subject": "portugues", "question_text": "Qual a pontuação usada no final de uma pergunta?", "option_a": "Ponto final (.)", "option_b": "Ponto de interrogação (?)", "option_c": "Ponto de exclamação (!)", "option_d": "Vírgula (,)", "correct_answer": "B"},
+    {"subject": "portugues", "question_text": "Qual palavra tem um dígrafo (duas letras com um som)?", "option_a": "Gato", "option_b": "Sol", "option_c": "Chave", "option_d": "Pato", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Na frase 'Eles foram ao parque', a palavra 'Eles' se refere a:", "option_a": "Uma pessoa", "option_b": "Mais de uma pessoa", "option_c": "Um objeto", "option_d": "Um lugar", "correct_answer": "B"},
+    {"subject": "portugues", "question_text": "Qual o feminino de 'boi'?", "option_a": "Boida", "option_b": "Vaca", "option_c": "Bezerra", "option_d": "Boia", "correct_answer": "B"},
+    # 20 Novas
+    {"subject": "portugues", "question_text": "A palavra 'felicidade' é um:", "option_a": "Verbo", "option_b": "Adjetivo", "option_c": "Substantivo Abstrato", "option_d": "Substantivo Concreto", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Qual frase está na voz passiva?", "option_a": "O menino chutou a bola.", "option_b": "A bola foi chutada pelo menino.", "option_c": "O menino é feliz.", "option_d": "Choveu muito ontem.", "correct_answer": "B"},
+    {"subject": "portugues", "question_text": "Qual é o antônimo de 'rápido'?", "option_a": "Veloz", "option_b": "Curto", "option_c": "Lento", "option_d": "Longo", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Marque a alternativa em que a palavra 'porque' está empregada corretamente:", "option_a": "Você não veio porque?", "option_b": "Não sei o porque da sua falta.", "option_c": "Ele não veio porque estava doente.", "option_d": "A razão por que ele faltou é desconhecida.", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Em 'A casa de João é amarela', o termo 'de João' indica:", "option_a": "Lugar", "option_b": "Posse", "option_c": "Modo", "option_d": "Tempo", "correct_answer": "B"},
+    {"subject": "portugues", "question_text": "Qual palavra é proparoxítona?", "option_a": "Sofa", "option_b": "Sabiá", "option_c": "Árvore", "option_d": "Casa", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "O coletivo de 'peixes' é:", "option_a": "Manada", "option_b": "Alcateia", "option_c": "Cardume", "option_d": "Enxame", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Na tirinha, o humor é construído principalmente pelo(a):", "option_a": "Linguagem verbal", "option_b": "Linguagem não verbal", "option_c": "Quebra de expectativa no último quadrinho", "option_d": "Cores utilizadas", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Qual o plural de 'cidadão'?", "option_a": "Cidadãos", "option_b": "Cidadões", "option_c": "Cidadães", "option_d": "Cidadãos", "correct_answer": "D"},
+    {"subject": "portugues", "question_text": "A palavra 'mas' indica uma ideia de:", "option_a": "Adição", "option_b": "Conclusão", "option_c": "Oposição", "option_d": "Explicação", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "O que é um bilhete?", "option_a": "Um texto longo e formal", "option_b": "Uma história com personagens", "option_c": "Um recado curto e informal", "option_d": "Uma notícia de jornal", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Qual o verbo da frase 'As crianças brincavam felizes'?", "option_a": "Crianças", "option_b": "Brincavam", "option_c": "Felizes", "option_d": "As", "correct_answer": "B"},
+    {"subject": "portugues", "question_text": "Qual palavra NÃO pertence ao mesmo campo semântico de 'escola'?", "option_a": "Professor", "option_b": "Lousa", "option_c": "Hospital", "option_d": "Aluno", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "A separação silábica correta de 'carroça' é:", "option_a": "car-ro-ça", "option_b": "ca-rro-ça", "option_c": "car-roç-a", "option_d": "ca-r-ro-ça", "correct_answer": "B"},
+    {"subject": "portugues", "question_text": "'Era uma vez...' é o começo típico de qual gênero textual?", "option_a": "Notícia", "option_b": "Receita", "option_c": "Carta", "option_d": "Conto de fadas", "correct_answer": "D"},
+    {"subject": "portugues", "question_text": "Qual o sujeito da oração 'O cachorro late muito'?", "option_a": "Late", "option_b": "Muito", "option_c": "O cachorro", "option_d": "Oração sem sujeito", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Qual palavra está no diminutivo?", "option_a": "Casarão", "option_b": "Casa", "option_c": "Casebre", "option_d": "Casinha", "correct_answer": "D"},
+    {"subject": "portugues", "question_text": "Identifique a figura de linguagem na frase 'Aquele homem é uma raposa'.", "option_a": "Hipérbole", "option_b": "Metáfora", "option_c": "Eufemismo", "option_d": "Ironia", "correct_answer": "B"},
+    {"subject": "portugues", "question_text": "Qual o tempo verbal de 'Eu estudarei amanhã'?", "option_a": "Presente", "option_b": "Passado", "option_c": "Futuro", "option_d": "Pretérito Imperfeito", "correct_answer": "C"},
+    {"subject": "portugues", "question_text": "Em qual opção todas as palavras são acentuadas pela mesma regra?", "option_a": "Pará, sofá, café", "option_b": "Lâmpada, trânsito, médico", "option_c": "Saúde, baú, país", "option_d": "História, série, polícia", "correct_answer": "B"}
+]
+
+math_questions = [
+    # 10 Originais
+    {"subject": "matematica", "question_text": "Mariana comprou 3 caixas de lápis com 12 lápis em cada. Quantos lápis ela comprou no total?", "option_a": "15", "option_b": "24", "option_c": "36", "option_d": "32", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "Uma pizza foi dividida em 8 pedaços. Se João comeu 3 pedaços, que fração da pizza ele comeu?", "option_a": "1/8", "option_b": "8/3", "option_c": "5/8", "option_d": "3/8", "correct_answer": "D"},
+    {"subject": "matematica", "question_text": "Qual o resultado da operação 58 - 29?", "option_a": "29", "option_b": "39", "option_c": "19", "option_d": "31", "correct_answer": "A"},
+    {"subject": "matematica", "question_text": "Um quadrado tem um lado de 5 cm. Qual é o seu perímetro (a soma de todos os lados)?", "option_a": "10 cm", "option_b": "15 cm", "option_c": "20 cm", "option_d": "25 cm", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "Qual número vem logo depois de 999?", "option_a": "998", "option_b": "100", "option_c": "1001", "option_d": "1000", "correct_answer": "D"},
+    {"subject": "matematica", "question_text": "Se um filme começa às 14h e dura 2 horas, a que horas ele termina?", "option_a": "15h", "option_b": "16h", "option_c": "17h", "option_d": "18h", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Quanto é 7 multiplicado por 8?", "option_a": "49", "option_b": "54", "option_c": "56", "option_d": "63", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "Em uma loja, uma camisa custa R$ 25. Se você pagar com uma nota de R$ 50, qual será o seu troco?", "option_a": "R$ 15", "option_b": "R$ 20", "option_c": "R$ 25", "option_d": "R$ 35", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "Qual destes números é o maior?", "option_a": "5.403", "option_b": "5.043", "option_c": "4.503", "option_d": "5.304", "correct_answer": "A"},
+    {"subject": "matematica", "question_text": "Quanto é a metade de 50?", "option_a": "20", "option_b": "25", "option_c": "30", "option_d": "35", "correct_answer": "B"},
+    # 20 Novas
+    {"subject": "matematica", "question_text": "Quanto é 100 dividido por 4?", "option_a": "20", "option_b": "25", "option_c": "30", "option_d": "40", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Qual figura geométrica tem 3 lados?", "option_a": "Quadrado", "option_b": "Círculo", "option_c": "Triângulo", "option_d": "Retângulo", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "O número 3.456 pode ser decomposto como:", "option_a": "300 + 40 + 5 + 6", "option_b": "3000 + 400 + 50 + 6", "option_c": "3000 + 450 + 6", "option_d": "3 + 4 + 5 + 6", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Se tenho 5 notas de R$ 10,00 e 3 moedas de R$ 1,00, quanto dinheiro eu tenho?", "option_a": "R$ 51,00", "option_b": "R$ 53,00", "option_c": "R$ 15,00", "option_d": "R$ 8,00", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Qual é o dobro de 45?", "option_a": "80", "option_b": "90", "option_c": "47", "option_d": "100", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Uma aula começa às 8h30 e termina às 9h15. Quantos minutos durou a aula?", "option_a": "30 minutos", "option_b": "40 minutos", "option_c": "45 minutos", "option_d": "55 minutos", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "O resultado de 1.234 + 567 é:", "option_a": "1.701", "option_b": "1.791", "option_c": "1.801", "option_d": "1.901", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "Qual das frações é equivalente a 1/2?", "option_a": "2/3", "option_b": "3/4", "option_c": "4/8", "option_d": "1/4", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "Um quilo de carne custa R$ 40,00. Quanto custa meio quilo?", "option_a": "R$ 10,00", "option_b": "R$ 20,00", "option_c": "R$ 30,00", "option_d": "R$ 40,00", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Qual é o próximo número na sequência: 5, 10, 15, 20, ...?", "option_a": "21", "option_b": "25", "option_c": "30", "option_d": "35", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Um retângulo tem 6 cm de comprimento e 4 cm de largura. Qual é a sua área?", "option_a": "10 cm²", "option_b": "20 cm²", "option_c": "24 cm²", "option_d": "36 cm²", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "Em um ônibus há 45 lugares. Se 28 estão ocupados, quantos estão vazios?", "option_a": "15", "option_b": "17", "option_c": "23", "option_d": "73", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Qual o valor do algarismo 7 no número 2.745?", "option_a": "7", "option_b": "70", "option_c": "700", "option_d": "7000", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "Um litro tem 1000 mililitros. Quantos mililitros há em 3 litros?", "option_a": "300 ml", "option_b": "30 ml", "option_c": "30000 ml", "option_d": "3000 ml", "correct_answer": "D"},
+    {"subject": "matematica", "question_text": "Qual é o resultado da expressão 10 + (5 x 2)?", "option_a": "30", "option_b": "25", "option_c": "20", "option_d": "17", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "O número 0,5 em forma de fração é:", "option_a": "1/5", "option_b": "1/2", "option_c": "5/1", "option_d": "1/50", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Um ano tem 12 meses. Quantos meses há em 5 anos?", "option_a": "50", "option_b": "52", "option_c": "60", "option_d": "72", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "O que pesa mais: 1kg de algodão ou 1kg de chumbo?", "option_a": "1kg de algodão", "option_b": "1kg de chumbo", "option_c": "Os dois têm o mesmo peso", "option_d": "Depende do volume", "correct_answer": "C"},
+    {"subject": "matematica", "question_text": "Se um relógio marca 3 horas, qual o tipo de ângulo formado pelos ponteiros?", "option_a": "Agudo", "option_b": "Reto", "option_c": "Obtuso", "option_d": "Raso", "correct_answer": "B"},
+    {"subject": "matematica", "question_text": "Se hoje é quarta-feira, que dia será daqui a 10 dias?", "option_a": "Sexta-feira", "option_b": "Sábado", "option_c": "Domingo", "option_d": "Segunda-feira", "correct_answer": "B"}
+]
