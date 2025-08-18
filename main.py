@@ -105,6 +105,70 @@ class SimulationResult(Base):
 # O ARQUIVO init_db.py AGORA É RESPONSÁVEL POR ISSO.
 # #############################################################
 
+import os
+
+# Detecta se está no Render ou local
+if os.environ.get("RENDER"):
+    SQLALCHEMY_DATABASE_URL = "sqlite:///tmp/saeb.db"
+else:
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./saeb.db"
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+# Função para inicializar o banco automaticamente
+def initialize_database():
+    try:
+        # Criar todas as tabelas
+        Base.metadata.create_all(bind=engine)
+        print("✅ Tabelas criadas/verificadas")
+        
+        # Conectar ao banco
+        db = SessionLocal()
+        
+        # Criar superuser se não existir
+        if not db.query(Superuser).filter_by(username="admin").first():
+            db.add(Superuser(username="admin", password_hash=hash_password("admin123")))
+            print("✅ Superuser 'admin' criado")
+        
+        # Adicionar questões básicas se não existirem
+        if db.query(Question).count() == 0:
+            # Questões de exemplo diretas (sem arquivo externo)
+            sample_questions = [
+                {
+                    "subject": "portugues",
+                    "question_text": "Qual é o plural de 'cidadão'?",
+                    "option_a": "cidadãos",
+                    "option_b": "cidadões",
+                    "option_c": "cidadãns", 
+                    "option_d": "cidadans",
+                    "correct_answer": "A"
+                },
+                {
+                    "subject": "matematica", 
+                    "question_text": "Quanto é 2 + 2?",
+                    "option_a": "3",
+                    "option_b": "4",
+                    "option_c": "5",
+                    "option_d": "6",
+                    "correct_answer": "B"
+                }
+            ]
+            
+            for q_data in sample_questions:
+                db.add(Question(**q_data))
+            print(f"✅ {len(sample_questions)} questões de exemplo adicionadas")
+        
+        db.commit()
+        db.close()
+        print("✅ Banco inicializado com sucesso!")
+        
+    except Exception as e:
+        print(f"❌ Erro na inicialização: {e}")
+        import traceback
+        traceback.print_exc()
+
 def get_db():
     db = SessionLocal()
     try:
@@ -128,12 +192,6 @@ def create_access_token(data: dict):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-
-
-@app.get("/init-database")
-async def initialize_database():
-    exec(open('init_db.py').read())
-    return {"message": "Database initialized successfully"}
 
 
 
@@ -188,7 +246,7 @@ async def login_page(request: Request):
         import traceback
         return HTMLResponse(f"<h1>Erro Debug:</h1><pre>{str(e)}\n\n{traceback.format_exc()}</pre>")
     
-    
+
 @app.post("/login")
 async def login(request: Request, db: Session = Depends(get_db), username: str = Form(...), password: str = Form(...)):
     user = db.query(Superuser).filter_by(username=username).first()
