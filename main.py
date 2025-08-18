@@ -182,8 +182,13 @@ async def start_simulation_by_code(request: Request, school_code: str = Form(...
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request, "title": "Login"})
-
+    try:
+        return templates.TemplateResponse("login.html", {"request": request, "title": "Login"})
+    except Exception as e:
+        import traceback
+        return HTMLResponse(f"<h1>Erro Debug:</h1><pre>{str(e)}\n\n{traceback.format_exc()}</pre>")
+    
+    
 @app.post("/login")
 async def login(request: Request, db: Session = Depends(get_db), username: str = Form(...), password: str = Form(...)):
     user = db.query(Superuser).filter_by(username=username).first()
